@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruleta de Presentaciones — A.1.5</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: radial-gradient(circle at 20% 15%, #fff3e6 0%, #ffe8f2 40%, #f5f0ff 100%);
+    min-height: 100vh;
+    color: #3a2a1e;
+    padding: 30px 20px 60px;
+  }
+
+  .wrap { max-width: 1000px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 30px; }
+  .eyebrow {
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; color: #db2777; margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(28px, 5vw, 44px);
+    background: linear-gradient(120deg, #f97316, #db2777);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .subtitle { color: #6b5a4d; font-size: 16px; margin-top: 6px; }
+
+  .stage {
+    display: flex; gap: 40px; align-items: center; justify-content: center; flex-wrap: wrap;
+    margin: 30px 0 20px;
+  }
+
+  .rueda-contenedor { position: relative; width: min(420px, 90vw); flex-shrink: 0; }
+  .puntero {
+    position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent;
+    border-top: 34px solid #3a2a1e; z-index: 5; filter: drop-shadow(0 3px 4px rgba(0,0,0,.25));
+  }
+  svg#rueda {
+    width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 30px rgba(190,24,119,.25));
+    transition: transform 5.5s cubic-bezier(.12,.75,.12,1);
+    border-radius: 50%;
+  }
+  .centro-rueda {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 22%; height: 22%; border-radius: 50%; background: #fff;
+    display: flex; align-items: center; justify-content: center; font-family:'Fredoka', sans-serif;
+    font-weight: 700; color: #db2777; font-size: clamp(14px, 2.2vw, 20px); text-align: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,.2); z-index: 4; pointer-events: none;
+  }
+
+  .panel-control {
+    background: white; border-radius: 20px; padding: 26px 28px; box-shadow: 0 10px 30px rgba(190,24,119,.12);
+    width: min(320px, 90vw);
+  }
+  .panel-control h2 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: #c2410c; margin-bottom: 12px; }
+
+  #btnGirar {
+    width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer;
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 18px; color: white;
+    background: linear-gradient(120deg, #f97316, #db2777); box-shadow: 0 6px 18px rgba(219,39,119,.4);
+    transition: transform .15s ease;
+  }
+  #btnGirar:hover { transform: translateY(-2px); }
+  #btnGirar:active { transform: translateY(0); }
+  #btnGirar:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  #btnReiniciar {
+    width: 100%; margin-top: 10px; padding: 12px; border-radius: 14px; cursor: pointer;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #a3462b;
+    background: #fff1e6; border: 2px solid #fbd8bd;
+  }
+
+  .resultado-box { margin-top: 18px; }
+  .resultado-item {
+    background: #fdf2f8; border-left: 4px solid #db2777; border-radius: 10px; padding: 12px 14px;
+    margin-bottom: 10px; animation: aparecer .4s ease;
+  }
+  .resultado-item .num { font-family:'Fredoka', sans-serif; font-weight:700; color:#be185d; font-size: 13px; }
+  .resultado-item .nombres { font-size: 14px; font-weight: 700; margin: 3px 0; }
+  .resultado-item .programas { font-size: 12.5px; color: #7c5a4a; }
+  .vacio-nota { font-size: 13.5px; color: #a3907f; font-style: italic; }
+
+  @keyframes aparecer { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
+
+  footer { text-align:center; margin-top: 40px; font-size: 12.5px; color: #a3907f; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Ruleta de Presentaciones</h1>
+  </header>
+
+  <div class="stage">
+    <div class="rueda-contenedor">
+      <div class="puntero"></div>
+      <svg id="rueda" viewBox="0 0 400 400"></svg>
+      <div class="centro-rueda">GIRAR</div>
+    </div>
+
+    <div class="panel-control">
+      <h2>🎯 Control</h2>
+      <button id="btnGirar" onclick="girarRueda()">Girar la ruleta</button>
+      <button id="btnReiniciar" onclick="reiniciar()">↺ Reiniciar ruleta</button>
+
+      <div class="resultado-box">
+        <h2 style="margin-top:18px;">Seleccionados</h2>
+        <div id="resultados">
+          <p class="vacio-nota">Aún no se ha girado la ruleta.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Politécnico Nuestra Señora de la Altagracia — Módulo: Análisis y Diseño de Reportes</footer>
+</div>
+
+<script>
+  const EQUIPOS_BASE = [
+    { num: 1, nombres: "Abreu Torres, Laura Paola — Abreu Victoriano, Jansel Omar", programas: "Power BI + Looker Studio" },
+    { num: 2, nombres: "Alonzo Báez, Mario Enrique — Aquino Moronta, Cristopher", programas: "Power BI + Crystal Reports" },
+    { num: 3, nombres: "Batista Acosta, Mayra Anyeliz — Bremont Hernández, Enmanuel", programas: "Power BI + JasperReports" },
+    { num: 4, nombres: "Canela Espinal, Raynier — Contreras Peralta, Carlos Saul", programas: "Looker Studio + Crystal Reports" },
+    { num: 5, nombres: "Delgado Espino, Anny Camila — Diloné Rodríguez, Mayory Ester", programas: "Looker Studio + JasperReports" },
+    { num: 6, nombres: "Domínguez Pichardo, Jayrol — Durán Peralta, Erika", programas: "Crystal Reports + JasperReports" },
+    { num: 7, nombres: "Durán Reinoso, Brianna — Durán, Jacob", programas: "Power BI + Looker Studio" }
+  ];
+
+  const COLORES = ['#f97316','#db2777','#7c3aed','#0ea5e9','#16a34a','#e8a33d','#ef4444'];
+
+  let equiposRestantes = [];
+  let seleccionados = [];
+  let girando = false;
+  let rotacionAcumulada = 0;
+
+  function iniciarEstado(){
+    equiposRestantes = EQUIPOS_BASE.map(e => ({...e}));
+    seleccionados = [];
+    rotacionAcumulada = 0;
+    document.getElementById('rueda').style.transition = 'none';
+    document.getElementById('rueda').style.transform = 'rotate(0deg)';
+    pintarResultados();
+    dibujarRueda();
+    document.getElementById('btnGirar').disabled = false;
+    document.getElementById('btnGirar').textContent = 'Girar la ruleta';
+  }
+
+  function reiniciar(){ iniciarEstado(); }
+
+  function pintarResultados(){
+    const cont = document.getElementById('resultados');
+    if(seleccionados.length === 0){
+      cont.innerHTML = '<p class="vacio-nota">Aún no se ha girado la ruleta.</p>';
+      return;
+    }
+    cont.innerHTML = seleccionados.map((s, i) => `
+      <div class="resultado-item">
+        <div class="num">Presentación ${i + 1}</div>
+        <div class="nombres">Equipo ${s.num}</div>
+      </div>
+    `).join('');
+  }
+
+  function dibujarRueda(){
+    const svg = document.getElementById('rueda');
+    const cx = 200, cy = 200, r = 195;
+    const n = equiposRestantes.length;
+    if(n === 0){
+      svg.innerHTML = `<circle cx="200" cy="200" r="195" fill="#f3e8e0"/><text x="200" y="205" text-anchor="middle" font-family="Fredoka" font-size="22" fill="#a3462b">¡Completo!</text>`;
+      return;
+    }
+    const anguloPorSector = 360 / n;
+    let html = '';
+    equiposRestantes.forEach((e, i) => {
+      const inicio = i * anguloPorSector;
+      const fin = inicio + anguloPorSector;
+      const x1 = cx + r * Math.cos(Math.PI * (inicio - 90) / 180);
+      const y1 = cy + r * Math.sin(Math.PI * (inicio - 90) / 180);
+      const x2 = cx + r * Math.cos(Math.PI * (fin - 90) / 180);
+      const y2 = cy + r * Math.sin(Math.PI * (fin - 90) / 180);
+      const largeArc = anguloPorSector > 180 ? 1 : 0;
+      const color = COLORES[i % COLORES.length];
+      html += `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${largeArc} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${color}" stroke="#fff" stroke-width="2"/>`;
+
+      const anguloMedio = inicio + anguloPorSector / 2;
+      const tx = cx + (r * 0.62) * Math.cos(Math.PI * (anguloMedio - 90) / 180);
+      const ty = cy + (r * 0.62) * Math.sin(Math.PI * (anguloMedio - 90) / 180);
+      html += `<text x="${tx.toFixed(2)}" y="${ty.toFixed(2)}" text-anchor="middle" dominant-baseline="middle"
+                font-family="Fredoka" font-weight="700" font-size="15" fill="#fff"
+                transform="rotate(${anguloMedio}, ${tx.toFixed(2)}, ${ty.toFixed(2)})">Equipo ${e.num}</text>`;
+    });
+    svg.innerHTML = html;
+  }
+
+  function girarRueda(){
+    if(girando || equiposRestantes.length === 0) return;
+    girando = true;
+    document.getElementById('btnGirar').disabled = true;
+
+    const n = equiposRestantes.length;
+    const anguloPorSector = 360 / n;
+    const indiceGanador = Math.floor(Math.random() * n);
+
+    // El puntero está fijo arriba (0°); calculamos cuánto girar para que el sector ganador quede ahí.
+    const anguloDestinoSector = indiceGanador * anguloPorSector + anguloPorSector / 2;
+    const vueltasExtra = 5 + Math.floor(Math.random() * 3); // 5-7 vueltas completas para el efecto
+    const rotacionFinal = rotacionAcumulada + vueltasExtra * 360 + (360 - anguloDestinoSector);
+
+    const svg = document.getElementById('rueda');
+    svg.style.transition = 'transform 5.5s cubic-bezier(.12,.75,.12,1)';
+    svg.style.transform = `rotate(${rotacionFinal}deg)`;
+    rotacionAcumulada = rotacionFinal % 360;
+
+    setTimeout(() => {
+      const ganador = equiposRestantes[indiceGanador];
+      seleccionados.push(ganador);
+      equiposRestantes = equiposRestantes.filter(e => e.num !== ganador.num);
+      pintarResultados();
+      dibujarRueda();
+      // Reajustamos la rotación visual a 0 sin animación para que el redibujado (con menos sectores) no salte
+      svg.style.transition = 'none';
+      svg.style.transform = 'rotate(0deg)';
+      rotacionAcumulada = 0;
+
+      girando = false;
+      if(equiposRestantes.length === 0){
+        document.getElementById('btnGirar').disabled = true;
+        document.getElementById('btnGirar').textContent = 'Sin equipos restantes';
+      } else {
+        document.getElementById('btnGirar').disabled = false;
+      }
+    }, 5600);
+  }
+
+  iniciarEstado();
+</script>
+</body>
+</html>
