@@ -17,7 +17,7 @@
     padding: 30px 20px 60px;
   }
 
-  .wrap { max-width: 1000px; margin: 0 auto; }
+  .wrap { max-width: 1600px; margin: 0 auto; }
 
   header { text-align: center; margin-bottom: 30px; }
   .eyebrow {
@@ -25,18 +25,18 @@
     text-transform: uppercase; color: #db2777; margin-bottom: 6px;
   }
   h1 {
-    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(28px, 5vw, 44px);
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(36px, 6vw, 64px);
     background: linear-gradient(120deg, #f97316, #db2777);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .subtitle { color: #6b5a4d; font-size: 16px; margin-top: 6px; }
 
   .stage {
-    display: flex; gap: 40px; align-items: center; justify-content: center; flex-wrap: wrap;
-    margin: 30px 0 20px;
+    display: flex; gap: 60px; align-items: center; justify-content: center; flex-wrap: wrap;
+    margin: 40px 0 20px;
   }
 
-  .rueda-contenedor { position: relative; width: min(420px, 90vw); flex-shrink: 0; }
+  .rueda-contenedor { position: relative; width: min(700px, 55vw); flex-shrink: 0; }
   .puntero {
     position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
     width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent;
@@ -51,19 +51,19 @@
     position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
     width: 22%; height: 22%; border-radius: 50%; background: #fff;
     display: flex; align-items: center; justify-content: center; font-family:'Fredoka', sans-serif;
-    font-weight: 700; color: #db2777; font-size: clamp(14px, 2.2vw, 20px); text-align: center;
+    font-weight: 700; color: #db2777; font-size: clamp(18px, 2.5vw, 30px); text-align: center;
     box-shadow: 0 4px 14px rgba(0,0,0,.2); z-index: 4; pointer-events: none;
   }
 
   .panel-control {
-    background: white; border-radius: 20px; padding: 26px 28px; box-shadow: 0 10px 30px rgba(190,24,119,.12);
-    width: min(320px, 90vw);
+    background: white; border-radius: 20px; padding: 40px 44px; box-shadow: 0 10px 30px rgba(190,24,119,.12);
+    width: min(480px, 90vw);
   }
-  .panel-control h2 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: #c2410c; margin-bottom: 12px; }
+  .panel-control h2 { font-family: 'Fredoka', sans-serif; font-size: 26px; color: #c2410c; margin-bottom: 18px; }
 
   #btnGirar {
-    width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer;
-    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 18px; color: white;
+    width: 100%; padding: 24px; border: none; border-radius: 16px; cursor: pointer;
+    font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 26px; color: white;
     background: linear-gradient(120deg, #f97316, #db2777); box-shadow: 0 6px 18px rgba(219,39,119,.4);
     transition: transform .15s ease;
   }
@@ -72,20 +72,20 @@
   #btnGirar:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
   #btnReiniciar {
-    width: 100%; margin-top: 10px; padding: 12px; border-radius: 14px; cursor: pointer;
-    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #a3462b;
+    width: 100%; margin-top: 14px; padding: 18px; border-radius: 16px; cursor: pointer;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: #a3462b;
     background: #fff1e6; border: 2px solid #fbd8bd;
   }
 
-  .resultado-box { margin-top: 18px; }
+  .resultado-box { margin-top: 26px; }
   .resultado-item {
-    background: #fdf2f8; border-left: 4px solid #db2777; border-radius: 10px; padding: 12px 14px;
-    margin-bottom: 10px; animation: aparecer .4s ease;
+    background: #fdf2f8; border-left: 6px solid #db2777; border-radius: 12px; padding: 18px 20px;
+    margin-bottom: 14px; animation: aparecer .4s ease;
   }
-  .resultado-item .num { font-family:'Fredoka', sans-serif; font-weight:700; color:#be185d; font-size: 13px; }
-  .resultado-item .nombres { font-size: 14px; font-weight: 700; margin: 3px 0; }
-  .resultado-item .programas { font-size: 12.5px; color: #7c5a4a; }
-  .vacio-nota { font-size: 13.5px; color: #a3907f; font-style: italic; }
+  .resultado-item .num { font-family:'Fredoka', sans-serif; font-weight:700; color:#be185d; font-size: 16px; }
+  .resultado-item .nombres { font-size: 22px; font-weight: 800; margin: 4px 0; }
+  .resultado-item .programas { font-size: 15px; color: #7c5a4a; }
+  .vacio-nota { font-size: 16px; color: #a3907f; font-style: italic; }
 
   @keyframes aparecer { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
 
