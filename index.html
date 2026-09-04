@@ -140,11 +140,13 @@
   let seleccionados = [];
   let girando = false;
   let rotacionAcumulada = 0;
+  let pendienteQuitar = null;
 
   function iniciarEstado(){
     equiposRestantes = EQUIPOS_BASE.map(e => ({...e}));
     seleccionados = [];
     rotacionAcumulada = 0;
+    pendienteQuitar = null;
     document.getElementById('rueda').style.transition = 'none';
     document.getElementById('rueda').style.transform = 'rotate(0deg)';
     pintarResultados();
@@ -205,6 +207,28 @@
     girando = true;
     document.getElementById('btnGirar').disabled = true;
 
+    const svg = document.getElementById('rueda');
+
+    // Si quedó un ganador mostrado del giro anterior, ahora sí lo quitamos de la rueda
+    // y la redibujamos al instante (sin animación) antes de calcular el nuevo giro.
+    if(pendienteQuitar !== null){
+      equiposRestantes = equiposRestantes.filter(e => e.num !== pendienteQuitar.num);
+      pendienteQuitar = null;
+      rotacionAcumulada = 0;
+      svg.style.transition = 'none';
+      svg.style.transform = 'rotate(0deg)';
+      dibujarRueda();
+      // Forzamos reflow para que el navegador aplique el reset antes de animar de nuevo
+      void svg.offsetWidth;
+    }
+
+    if(equiposRestantes.length === 0){
+      girando = false;
+      document.getElementById('btnGirar').disabled = true;
+      document.getElementById('btnGirar').textContent = 'Sin equipos restantes';
+      return;
+    }
+
     const n = equiposRestantes.length;
     const anguloPorSector = 360 / n;
     const indiceGanador = Math.floor(Math.random() * n);
@@ -214,7 +238,6 @@
     const vueltasExtra = 5 + Math.floor(Math.random() * 3); // 5-7 vueltas completas para el efecto
     const rotacionFinal = rotacionAcumulada + vueltasExtra * 360 + (360 - anguloDestinoSector);
 
-    const svg = document.getElementById('rueda');
     svg.style.transition = 'transform 5.5s cubic-bezier(.12,.75,.12,1)';
     svg.style.transform = `rotate(${rotacionFinal}deg)`;
     rotacionAcumulada = rotacionFinal % 360;
@@ -222,16 +245,12 @@
     setTimeout(() => {
       const ganador = equiposRestantes[indiceGanador];
       seleccionados.push(ganador);
-      equiposRestantes = equiposRestantes.filter(e => e.num !== ganador.num);
+      pendienteQuitar = ganador;
       pintarResultados();
-      dibujarRueda();
-      // Reajustamos la rotación visual a 0 sin animación para que el redibujado (con menos sectores) no salte
-      svg.style.transition = 'none';
-      svg.style.transform = 'rotate(0deg)';
-      rotacionAcumulada = 0;
+      // La rueda se queda tal cual quedó (detenida sobre el equipo ganador) hasta el próximo giro.
 
       girando = false;
-      if(equiposRestantes.length === 0){
+      if(equiposRestantes.length === 1){
         document.getElementById('btnGirar').disabled = true;
         document.getElementById('btnGirar').textContent = 'Sin equipos restantes';
       } else {
