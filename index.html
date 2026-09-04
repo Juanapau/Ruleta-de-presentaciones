@@ -209,6 +209,44 @@
 
     const svg = document.getElementById('rueda');
 
+    function iniciarGiroAnimado(){
+      if(equiposRestantes.length === 0){
+        girando = false;
+        document.getElementById('btnGirar').disabled = true;
+        document.getElementById('btnGirar').textContent = 'Sin equipos restantes';
+        return;
+      }
+
+      const n = equiposRestantes.length;
+      const anguloPorSector = 360 / n;
+      const indiceGanador = Math.floor(Math.random() * n);
+
+      // El puntero está fijo arriba (0°); calculamos cuánto girar para que el sector ganador quede ahí.
+      const anguloDestinoSector = indiceGanador * anguloPorSector + anguloPorSector / 2;
+      const vueltasExtra = 5 + Math.floor(Math.random() * 3); // 5-7 vueltas completas para el efecto
+      const rotacionFinal = rotacionAcumulada + vueltasExtra * 360 + (360 - anguloDestinoSector);
+
+      svg.style.transition = 'transform 5.5s cubic-bezier(.12,.75,.12,1)';
+      svg.style.transform = `rotate(${rotacionFinal}deg)`;
+      rotacionAcumulada = rotacionFinal % 360;
+
+      setTimeout(() => {
+        const ganador = equiposRestantes[indiceGanador];
+        seleccionados.push(ganador);
+        pendienteQuitar = ganador;
+        pintarResultados();
+        // La rueda se queda tal cual quedó (detenida sobre el equipo ganador) hasta el próximo giro.
+
+        girando = false;
+        if(equiposRestantes.length === 1){
+          document.getElementById('btnGirar').disabled = true;
+          document.getElementById('btnGirar').textContent = 'Sin equipos restantes';
+        } else {
+          document.getElementById('btnGirar').disabled = false;
+        }
+      }, 5600);
+    }
+
     // Si quedó un ganador mostrado del giro anterior, ahora sí lo quitamos de la rueda
     // y la redibujamos al instante (sin animación) antes de calcular el nuevo giro.
     if(pendienteQuitar !== null){
@@ -218,45 +256,17 @@
       svg.style.transition = 'none';
       svg.style.transform = 'rotate(0deg)';
       dibujarRueda();
-      // Forzamos reflow para que el navegador aplique el reset antes de animar de nuevo
-      void svg.offsetWidth;
+      // Esperamos dos frames para que el navegador PINTE el reinicio en 0° antes de animar de
+      // nuevo; hacerlo en el mismo instante (aun forzando reflow) puede hacer que el navegador
+      // arranque la animación desde un punto intermedio, dando giros cortos y poco intensos.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          iniciarGiroAnimado();
+        });
+      });
+    } else {
+      iniciarGiroAnimado();
     }
-
-    if(equiposRestantes.length === 0){
-      girando = false;
-      document.getElementById('btnGirar').disabled = true;
-      document.getElementById('btnGirar').textContent = 'Sin equipos restantes';
-      return;
-    }
-
-    const n = equiposRestantes.length;
-    const anguloPorSector = 360 / n;
-    const indiceGanador = Math.floor(Math.random() * n);
-
-    // El puntero está fijo arriba (0°); calculamos cuánto girar para que el sector ganador quede ahí.
-    const anguloDestinoSector = indiceGanador * anguloPorSector + anguloPorSector / 2;
-    const vueltasExtra = 5 + Math.floor(Math.random() * 3); // 5-7 vueltas completas para el efecto
-    const rotacionFinal = rotacionAcumulada + vueltasExtra * 360 + (360 - anguloDestinoSector);
-
-    svg.style.transition = 'transform 5.5s cubic-bezier(.12,.75,.12,1)';
-    svg.style.transform = `rotate(${rotacionFinal}deg)`;
-    rotacionAcumulada = rotacionFinal % 360;
-
-    setTimeout(() => {
-      const ganador = equiposRestantes[indiceGanador];
-      seleccionados.push(ganador);
-      pendienteQuitar = ganador;
-      pintarResultados();
-      // La rueda se queda tal cual quedó (detenida sobre el equipo ganador) hasta el próximo giro.
-
-      girando = false;
-      if(equiposRestantes.length === 1){
-        document.getElementById('btnGirar').disabled = true;
-        document.getElementById('btnGirar').textContent = 'Sin equipos restantes';
-      } else {
-        document.getElementById('btnGirar').disabled = false;
-      }
-    }, 5600);
   }
 
   iniciarEstado();
